@@ -1,0 +1,102 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Playground">
+  <h1>Playground</h1>
+  <p class="lede">
+    The expressir-rs engine compiled to wasm, running in your browser —
+    the same core the ruby, python, C, and TypeScript tiers use. Paste
+    an EXPRESS schema or an ISO 10303-21 population.
+  </p>
+
+  <p>
+    <label for="mode-schema"><input type="radio" name="mode" id="mode-schema" value="schema" checked /> EXPRESS schema</label>
+    &nbsp;
+    <label for="mode-p21"><input type="radio" name="mode" id="mode-p21" value="p21" /> ISO 10303-21 population</label>
+  </p>
+
+  <textarea id="source" rows="14" spellcheck="false">SCHEMA demo;
+  ENTITY part;
+    name : STRING;
+    (*"demo.part" the identity *)
+    WHERE
+      wr1 : SIZEOF(name) > 0;
+  END_ENTITY;
+END_SCHEMA;</textarea>
+
+  <p><button id="run">Parse</button></p>
+
+  <h2>Output</h2>
+  <pre id="output" aria-live="polite">Loading the engine…</pre>
+</Base>
+
+<style>
+  textarea,
+  pre {
+    width: 100%;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.875rem;
+  }
+  textarea {
+    background: var(--code);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.75rem;
+  }
+  button {
+    font-size: 1rem;
+    padding: 0.4rem 1.2rem;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  // The engine glue lives in public/ (vendored, BUILT_FROM pins the
+  // engine commit). Building the URL at runtime keeps the bundler
+  // from resolving it — the browser fetches it straight from the
+  // site root.
+  const engineBase = new URL("wasm/", import.meta.env.SITE + import.meta.env.BASE_URL).href;
+  const mod = await import(/* @vite-ignore */ `${engineBase}expressir_rs.js`);
+  const { attach_remarks, format, parse_population, wire_schema } = mod;
+
+  const out = document.getElementById("output") as HTMLElement;
+  const source = document.getElementById("source") as HTMLTextAreaElement;
+
+  function mode(): "schema" | "p21" {
+    const picked = document.querySelector(
+      'input[name="mode"]:checked',
+    ) as HTMLInputElement;
+    return picked.value === "p21" ? "p21" : "schema";
+  }
+
+  function runSchema(text: string): string {
+    const attached = attach_remarks(wire_schema(text), text, false);
+    return format(attached, false);
+  }
+
+  function runPopulation(text: string): string {
+    const inventory = JSON.parse(parse_population(text));
+    const lines: string[] = [`file_schemas: ${JSON.stringify(inventory.file_schemas)}`];
+    lines.push(`records: ${inventory.records.length}`);
+    for (const record of inventory.records) {
+      lines.push(`  #${record.id} = ${record.keyword}${record.complex ? " (complex)" : ""}`);
+    }
+    lines.push(`anchors: ${JSON.stringify(inventory.anchors)}`);
+    lines.push(`references: ${JSON.stringify(inventory.references)}`);
+    return lines.join("\n");
+  }
+
+  function run() {
+    try {
+      out.textContent =
+        mode() === "schema" ? runSchema(source.value) : runPopulation(source.value);
+    } catch (error) {
+      out.textContent = `error: ${String(error)}`;
+    }
+  }
+
+  await mod.default(`${engineBase}expressir_rs_bg.wasm`);
+  document.getElementById("run")?.addEventListener("click", run);
+  out.textContent = "Ready — press Parse.";
+</script>
