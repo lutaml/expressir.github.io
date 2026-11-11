@@ -1,0 +1,51 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Architecture">
+  <h1>Architecture</h1>
+
+  <h2>One core, many tiers</h2>
+  <p>
+    The engine lives in <a href="https://github.com/lutaml/expressir-rs">expressir-rs</a>
+    (Rust, on <a href="https://github.com/parsanol">parsanol</a>). Every
+    other language rides it over a wire contract — nobody reimplements
+    EXPRESS.
+  </p>
+
+  <h2>The six operations</h2>
+  <table>
+    <thead>
+      <tr><th>Operation</th><th>In</th><th>Out</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>parse schema</td><td>EXPRESS text</td><td>model-hash wire JSON</td></tr>
+      <tr><td>attach remarks</td><td>wire + source</td><td>wire with the remark store filled</td></tr>
+      <tr><td>format</td><td>wire</td><td>EXPRESS text</td></tr>
+      <tr><td>check</td><td>wire (+ optional dialect)</td><td>findings JSON array</td></tr>
+      <tr><td>parse population</td><td>ISO 10303-21 text</td><td>structural inventory JSON</td></tr>
+      <tr><td>validate population</td><td>entity inventory + population</td><td>verdict JSON</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Wire contracts</h2>
+  <ul>
+    <li>
+      <strong>C ABI</strong> — the <code>expr_*</code> family: JSON in,
+      JSON out, NULL on failure with a thread-local
+      <code>expr_last_error()</code>, and <code>expr_string_free</code>
+      for every returned string.
+    </li>
+    <li>
+      <strong>wasm</strong> — the same six operations behind
+      wasm-bindgen, vendored into
+      <a href="https://github.com/lutaml/expressir-ts">expressir-ts</a>
+      with the pin recorded in <code>BUILT_FROM</code>.
+    </li>
+    <li>
+      <strong>PARG artifacts</strong> — grammars ship as checksummed
+      <code>parsanol-tree/v2</code> envelopes; artifacts declaring the
+      shape parse identically forever.
+    </li>
+  </ul>
+</Base>

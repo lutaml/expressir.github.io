@@ -1,0 +1,35 @@
+---
+import Base from "../layouts/Base.astro";
+
+const inventoryCode = `inventory = expressir.parse_population(open("model.p21").read())
+# {"file_schemas": [...], "records": [{"id": 1, "keyword": "E", ...}],
+#  "anchors": [["POINT_1", "#1"]], "references": [...]}
+
+verdict = expressir.validate_population(["E", "POINT"], source)
+# {"valid": true, "errors": []}`;
+---
+
+<Base title="Part 21">
+  <h1>ISO 10303-21 populations</h1>
+
+  <p class="lede">
+    The exchange structure (header, anchor, reference, and data
+    sections) is parsed by a compiled PARG grammar, not hand-rolled
+    code: <code>assets/p21/iso-10303-21.parg</code> in
+    <a href="https://github.com/lutaml/expressir-rs">expressir-rs</a>
+    compiles to a checksummed artifact whose trees are pinned to the
+    ruby grammar byte-for-byte on the ISO 10303-21 annex corpus.
+  </p>
+
+  <h2>What you get</h2>
+  <pre><code>{inventoryCode}</code></pre>
+
+  <h2>The parity gate</h2>
+  <p>
+    The rust suite replays the ruby DSL grammar's trees on the annex
+    corpus (annexes E, H, I, J) — a grammar change that drifts from
+    the ruby behavior fails the build. The embedded accept/reject
+    tests run at artifact compile time, so a grammar that cannot parse
+    its own contract never seals.
+  </p>
+</Base>

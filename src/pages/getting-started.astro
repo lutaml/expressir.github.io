@@ -1,0 +1,41 @@
+---
+import Base from "../layouts/Base.astro";
+
+const rubyCode = `require "expressir"
+tree = Expressir::Express::Parser.from_file("schema.exp")
+puts Expressir::Express::Formatter.format(tree)`;
+
+const pythonCode = `import expressir
+wire = expressir.parse_schema(open("schema.exp").read())
+print(expressir.format(expressir.attach_remarks(wire, source)))`;
+
+const tsCode = `import { wireSchema, attachRemarks, format } from "expressir";
+const wire = wireSchema(source);
+console.log(format(attachRemarks(wire, source)));`;
+
+const rustCode = `let tree = expressir_rs::ParsedTree::parse(&source)?;
+let wire = tree.to_model_json("schema.exp")?;`;
+
+const cCode = `char *wire = expr_parse_schema(source);
+if (!wire) { fprintf(stderr, "%s\\n", expr_last_error()); }
+expr_string_free(wire);`;
+---
+
+<Base title="Getting started">
+  <h1>Getting started</h1>
+
+  <h2>Ruby</h2>
+  <pre><code>{rubyCode}</code></pre>
+
+  <h2>Python</h2>
+  <pre><code>{pythonCode}</code></pre>
+
+  <h2>TypeScript / wasm</h2>
+  <pre><code>{tsCode}</code></pre>
+
+  <h2>Rust</h2>
+  <pre><code>{rustCode}</code></pre>
+
+  <h2>C</h2>
+  <pre><code>{cCode}</code></pre>
+</Base>

@@ -1,0 +1,33 @@
+---
+const { title = "Expressir" } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const nav = [
+  ["Architecture", `${base}architecture/`],
+  ["Getting started", `${base}getting-started/`],
+  ["Part 21", `${base}part21/`],
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · Expressir</title>
+  </head>
+  <body>
+    <header class="site">
+      <a class="brand" href={`${base}`}>Expressir</a>
+      <nav>
+        {nav.map(([label, href]) => <a href={href}>{label}</a>)}
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  @import "../styles/global.css";
+</style>

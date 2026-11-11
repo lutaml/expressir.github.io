@@ -1,0 +1,40 @@
+---
+import Base from "../layouts/Base.astro";
+const base = import.meta.env.BASE_URL;
+---
+
+<Base title="EXPRESS and ISO 10303-21 tooling">
+  <p class="lede">
+    One EXPRESS engine, every language. Expressir parses EXPRESS
+    schemas and ISO 10303-21 populations, attaches remarks, formats,
+    and checks — from a single Rust core shipped as a native lib, a
+    stable C ABI, wasm, ruby, and python.
+  </p>
+
+  <h2>The tiers</h2>
+  <table>
+    <thead>
+      <tr><th>Tier</th><th>Package</th><th>Surface</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Rust</td><td><a href="https://github.com/lutaml/expressir-rs">lutaml/expressir-rs</a></td><td>the core: parse, attach, format, check, Part 21</td></tr>
+      <tr><td>C</td><td><code>expr_*</code> family</td><td>handle-free JSON in/out over the same six operations</td></tr>
+      <tr><td>WebAssembly</td><td><a href="https://github.com/lutaml/expressir-ts">lutaml/expressir-ts</a></td><td>browser/Node via the vendored wasm build</td></tr>
+      <tr><td>Ruby</td><td><a href="https://github.com/lutaml/expressir">lutaml/expressir</a></td><td>the original gem, on the native engine</td></tr>
+      <tr><td>Python</td><td><a href="https://github.com/lutaml/expressir-python">lutaml/expressir-python</a></td><td>ctypes over the C ABI</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Quickstart</h2>
+  <pre><code>import expressir
+
+wire = expressir.parse_schema("SCHEMA demo; ENTITY e; a : STRING; END_ENTITY; END_SCHEMA;")
+print(expressir.format(expressir.attach_remarks(wire, source)))</code></pre>
+
+  <p>
+    See <a href={`${base}getting-started/`}>getting started</a> for each
+    tier, <a href={`${base}architecture/`}>architecture</a> for how the
+    core is shared, and <a href={`${base}part21/`}>Part 21</a> for the
+    ISO 10303-21 population story.
+  </p>
+</Base>
