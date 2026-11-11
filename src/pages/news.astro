@@ -1,0 +1,32 @@
+---
+import Base from "../layouts/Base.astro";
+const base = import.meta.env.BASE_URL;
+
+const news = [
+  {
+    date: "2026-11-11",
+    title: "The architecture port train: one core, every tier",
+    items: [
+      "P21 ships as a compiled PARG artifact — the ISO 10303-21 annex corpus parses byte-identically on the ruby and rust lanes (6/6).",
+      "The stable C ABI (the expr_* family) lands in expressir-rs; python and TypeScript/wasm runtimes open over it.",
+      "The no-native lane becomes a supported configuration: the suite runs on both lanes in CI (lane-parity), the contract matrix pins every wire shape with checksums, and a daily date-seeded differential fuzz compares the lanes byte-for-byte.",
+      "New repos: expressir-python (ctypes over the C ABI), expressir-ts (the vendored wasm runtime), and this site.",
+    ],
+  },
+];
+---
+
+<Base title="News">
+  <h1>News</h1>
+
+  {news.map((post) => (
+    <section>
+      <h2>{post.date} — {post.title}</h2>
+      <ul>
+        {post.items.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+  ))}
+
+  <p><a href={`${base}getting-started/`}>Get started</a> with any tier.</p>
+</Base>
