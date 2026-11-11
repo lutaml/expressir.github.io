@@ -1,0 +1,2 @@
+81ea8201a4c326c451769b629dd5ea3a753a8579
+built with: wasm-pack build --target web (from expressir-rs main)
